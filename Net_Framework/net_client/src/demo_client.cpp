@@ -24,8 +24,8 @@ int main()
         for (int i = 0; i < 3; i++) old_key[i] = key[i];
         */
 
-        c.ping_server();
         std::this_thread::sleep_for(3s);
+        c.ping_server();
 
         if (c.is_connected())
         {
@@ -56,7 +56,7 @@ int main()
                     case CustomMsgTypes::ServerMessage:
                     {
                         // Server has responded to a ping request
-                        constexpr uint32_t clientID{};
+                        uint32_t clientID{};
                         msg >> clientID;
                         std::cout << "Hello from [" << clientID << "]\n";
                     }
