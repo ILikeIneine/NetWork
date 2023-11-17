@@ -1,6 +1,6 @@
-#include "net.h"
-#include "net_server.h"
+#pragma once
 
+#include "net.h"
 
 enum class CustomMsgTypes : uint32_t
 {
@@ -10,7 +10,6 @@ enum class CustomMsgTypes : uint32_t
   MessageAll,
   ServerMessage,
 };
-
 
 class custom_server : public hnk::net::server_interface<CustomMsgTypes>
 {
@@ -64,14 +63,3 @@ protected:
     }
   }
 };
-
-int main()
-{
-  custom_server svr(60000);
-  svr.start();
-
-  while(true)
-  {
-    svr.update(-1, true);
-  }
-}
