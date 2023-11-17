@@ -36,6 +36,7 @@ struct message
 
         auto sz = msg.body.size();
         msg.body.resize(sz + sizeof(DataType));
+
         std::memcpy(msg.body.data() + sz, &val, sizeof(DataType));
 
         msg.header.size = msg.size();
@@ -43,23 +44,21 @@ struct message
     }
 
     template <typename DataType>
-    friend message& operator>>(message& msg, DataType data)
+    friend message& operator>>(message& msg, DataType& data)
     {
         static_assert(std::is_standard_layout_v<DataType>, "data is not valid to pull out from message");
 
         auto sz = msg.body.size();
+        auto data_begin_pos = sz - sizeof(data);
 
-        auto data_pos = sz - sizeof(data);
-        std::memcpy(msg.body.data() + data_pos, &data, sizeof(data));
+        std::memcpy(&data, msg.body.data() + data_begin_pos, sizeof(data));
 
-        msg.body.resize(data_pos);
-
+        msg.body.resize(data_begin_pos);
         msg.header.size = msg.size();
+
         return msg;
     }
-
 };
-
 
 template <typename T>
 class connection;

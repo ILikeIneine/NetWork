@@ -33,8 +33,9 @@ protected:
     uint64_t handshake_in_ = 0;
     uint64_t handshake_check_ = 0;
 
-    bool valid_handshake_ = false;
-    bool connection_established_ = false;
+    // currently not used, used in future
+    [[maybe_unused]] bool valid_handshake_ = false;
+    [[maybe_unused]] bool connection_established_ = false;
 
 public:
     connection(owner belonger, asio::io_context& ioc, asio::ip::tcp::socket socket, tsqueue<owned_message<T>>& q_in)
@@ -54,11 +55,9 @@ public:
         }
     }
 
-    virtual ~connection()
-    {
-    }
+    virtual ~connection() = default;
 
-    uint32_t get_id() const
+    [[nodiscard]] uint32_t get_id() const
     {
         return id_;
     }
@@ -106,7 +105,7 @@ public:
         }
     }
 
-    bool is_connected() const
+    [[nodiscard]] bool is_connected() const
     {
         return socket_.is_open();
     }
@@ -188,6 +187,7 @@ private:
                              {
                                  if (this->msg_temporary_in_.header.size > 0)
                                  {
+                                     // reserve size for message-body
                                      this->msg_temporary_in_.body.resize(msg_temporary_in_.header.size);
                                      read_body();
                                  } else
@@ -279,9 +279,13 @@ private:
     {
         if (owner_type_ == owner::client)
         {
+            // |Src| of message that client received
+            // is determined(Server).
             qmsg_in_.push_back({nullptr, msg_temporary_in_});
         } else
         {
+            // |Src| of message that server received
+            // bind to the corresponding connection.
             qmsg_in_.push_back({this->shared_from_this(), msg_temporary_in_});
         }
 
